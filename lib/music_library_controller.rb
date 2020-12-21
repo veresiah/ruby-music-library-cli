@@ -1,14 +1,12 @@
 class MusicLibraryController
-
-
   def initialize(path = "./db/mp3s")
-    importer = MusicImporter.new(path)
-    importer.import
+    MusicImporter.new(path).import
   end
 
-  def call	  
-    input = ''
-    while input != 'exit'
+  def call
+    input = ""
+
+    while input != "exit"
       puts "Welcome to your music library!"
       puts "To list all of your songs, enter 'list songs'."
       puts "To list all of the artists in your library, enter 'list artists'."
@@ -18,76 +16,73 @@ class MusicLibraryController
       puts "To play a song, enter 'play song'."
       puts "To quit, type 'exit'."
       puts "What would you like to do?"
-      input = gets.chomp
+
+      input = gets.strip
 
       case input
-      when 'list songs'
-        self.list_songs
-      when 'list artists'
-        self.list_artists
-      when 'list genres'
-        self.list_genres
-      when 'list artists'
-        self.list_artists
-      when 'list artist'
-        self.list_songs_by_artist
-      when 'list genre'
-        self.list_songs_by_genre
-      when 'play song'
-        self.play_song
-      else
-        "Type in a valid request please"
+      when "list songs"
+        list_songs
+      when "list artists"
+        list_artists
+      when "list genres"
+        list_genres
+      when "list artist"
+        list_songs_by_artist
+      when "list genre"
+        list_songs_by_genre
+      when "play song"
+        play_song
       end
     end
-  end 
+  end
 
   def list_songs
-    song = Song.all.sort {|a,b| a.name <=> b.name} 
-    song.each.with_index do |s, i|
-      puts "#{i+1}. #{s.artist.name} - #{s.name} - #{s.genre.name}"
-    end
+    Song.all.sort{ |a, b| a.name <=> b.name }.each.with_index(1) do |s, i|
+        puts "#{i}. #{s.artist.name} - #{s.name} - #{s.genre.name}"
+      end
   end
-  
+
   def list_artists
-  artists = Artist.all.sort {|a,b| a.name <=> b.name}
-  artists.each.with_index(1) {|artist, i| 
-  puts "#{i}. #{artist.name}"}
+    Artist.all.sort{ |a, b| a.name <=> b.name }.each.with_index(1) do |a, i|
+      puts "#{i}. #{a.name}"
+    end
   end
 
   def list_genres
-      genres = Genre.all.sort {|a,b| a.name <=> b.name}
-      genres.each.with_index(1) {|genre, i| 
-      puts "#{i}. #{genre.name}"}
+    Genre.all.sort{ |a, b| a.name <=> b.name }.each.with_index(1) do |g, i|
+      puts "#{i}. #{g.name}"
+    end
   end
 
   def list_songs_by_artist
-      puts "Please enter the name of an artist:"
-      input = gets.strip
-  
-      if artist = Artist.find_by_name(input)
-        artist.songs.sort { |a,b| a.name <=> b.name }.each.with_index(1) do |song, i|
-          puts "#{i}. #{song.name} - #{song.genre.name}"
-        end
+    puts "Please enter the name of an artist:"
+    input = gets.strip
+
+    if artist = Artist.find_by_name(input)
+      artist.songs.sort{ |a, b| a.name <=> b.name }.each.with_index(1) do |s, i|
+        puts "#{i}. #{s.name} - #{s.genre.name}"
       end
+    end
   end
 
   def list_songs_by_genre
-      puts "Please enter the name of a genre:"
-      input = gets.strip
+    puts "Please enter the name of a genre:"
+    input = gets.strip
 
-      if genre = Genre.find_by_name(input)
-          genre.songs.sort { |a,b| a.name <=> b.name }.each.with_index(1) do |song, i|
-            puts "#{i}. #{song.artist.name} - #{song.name}"
-          end
+    if genre = Genre.find_by_name(input)
+      genre.songs.sort{ |a, b| a.name <=> b.name }.each.with_index(1) do |s, i|
+        puts "#{i}. #{s.artist.name} - #{s.name}"
       end
+    end
   end
 
   def play_song
-      puts "Which song number would you like to play?"
-      input = gets.strip.to_i
-      if (1..Song.all.length).include?(input)
-        song = Song.all.sort{ |a, b| a.name <=> b.name }[input - 1]
-      end
-      puts "Playing #{song.name} by #{song.artist.name}" if song
+    puts "Which song number would you like to play?"
+
+    input = gets.strip.to_i
+    if (1..Song.all.length).include?(input)
+      song = Song.all.sort{ |a, b| a.name <=> b.name }[input - 1]
+    end
+    puts "Playing #{song.name} by #{song.artist.name}" if song
   end
-end 
+end
